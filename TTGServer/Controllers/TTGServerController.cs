@@ -12,13 +12,14 @@ namespace TTGServer.Controllers
      * Получить профиль пользователя (авторизация)
      *** Получить профиль пользователя
      *** Регистрация
-     * Получить инфу по маршруту (цена, среднее время, список остановок, список машин)
+     *** Получить инфу по маршруту (цена, среднее время, список остановок, список машин)
      *** Получить список имен всех маршрутов
      *** Отметить остановку для пассажира
      *** Отменить выбор остановки для пассажира
      * Очистить остановку
      *** Получить список активных авто (для обновления)
      * Изменить профиль
+     * Удалить профиль
      *** Изменить статус авто
      *** Изменить mapInfo для авто
      *** Начать смену
@@ -26,7 +27,7 @@ namespace TTGServer.Controllers
      *** Проверить наличие начатой смены
      *** Начать рейс
      *** Закончить рейс
-     * Изменить список остановок
+     *** Изменить список остановок
      * Удалить водителя
      *** Добавить водителя
      * Изменить водителя
@@ -91,10 +92,10 @@ namespace TTGServer.Controllers
             return service.GetAllWayNames();
         }
 
-        [HttpPut(@"InfoService/UpdatePassengerPosition")]
+        [HttpPut(@"MapInfoService/UpdatePassengerPosition")]
         public void UpdatePassengerPosition([FromBody] PassengerWaiting passengerWaiting)
         {
-            InfoService service = new InfoService(new TTG_ver3Context());
+            MapInfoService service = new MapInfoService(new TTG_ver3Context());
 
             service.UpdatePassengerPosition(passengerWaiting);
         }
@@ -177,6 +178,22 @@ namespace TTGServer.Controllers
             InfoService service = new InfoService(new TTG_ver3Context());
 
             return service.IsStartTripExists(login);
+        }
+
+        [HttpGet(@"InfoService/GetWayInformation/{wayName}")]
+        public WayInformation? GetWayInformation(string wayName)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            return service.GetWayInformation(wayName);
+        }
+
+        [HttpPut(@"InfoService/UpdateStationList")]
+        public void UpdateStationList([FromBody] UpdateStationListModel model)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            service.UpdateStationsList(model);
         }
     }
 }

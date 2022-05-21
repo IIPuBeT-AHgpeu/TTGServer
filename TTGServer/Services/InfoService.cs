@@ -123,61 +123,35 @@ namespace TTGServer.Services
                 WayInformation wayInformation = new WayInformation() { Price = way.Price };
 
                 //Get avrTime
-                wayInformation.AvrTripTime = 0;//
+                var tripsTime = from trip in Context.Trips
+                                join workday in Context.WorkDays on trip.WorkdayId equals workday.Id
+                                join unit in Context.Units on workday.UnitId equals unit.Id
+                                join _way in Context.Ways on unit.WayId equals _way.Id
+                                where _way.Name == wayName
+                                select new { StartTime = trip.TimeStart, EndTime = trip.TimeEnd };
 
-                //Get stations
+                float? sum = 0;
 
+                foreach (var trip in tripsTime)
+                {
+                    sum += (trip.EndTime?.Hour * 60 + trip.EndTime?.Minute + (float?)trip.EndTime?.Second / 60) 
+                        - ((float)trip.StartTime.Hour * 60 + trip.StartTime.Minute + (float)trip.StartTime.Second / 60);
+                }
 
+                wayInformation.AvrTripTime = sum/tripsTime.Count();//
+
+                MapInfoService mapInfoService = new MapInfoService(Context);
+
+                //Get Stations
+                wayInformation.Stations = mapInfoService.GetStationsMapInfo(wayName);
                 //Get cars
-
+                wayInformation.Cars = mapInfoService.GetUnitsMapInfo(wayName);
 
                 return wayInformation;
             }
             catch (Exception)
             {
                 return null;
-            }
-        }
-
-        public void UpdatePassengerPosition(PassengerWaiting passenger)
-        {
-            if(passenger.IsSet)
-            {
-                try
-                {
-                    //Get wayId
-                    int wayId = Context.Ways.First(way => way.Name == passenger.WayName).Id;
-                    //Get stationId
-                    int stationId = Context.Stations.First(station => 
-                        (
-                            station.Latitude == passenger.StationLatitude && 
-                            station.Longitude == passenger.StationLongitude) &&
-                            station.WayId == wayId
-                        ).Id;
-
-                    Passenger _passenger = Context.Passengers.First(pass => pass.Login == passenger.Login);
-                    _passenger.StationId = stationId;
-
-                    Context.SaveChanges();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Error in update passenger.");
-                }
-            }
-            else
-            {
-                try
-                {
-                    Passenger _passenger = Context.Passengers.First(pass => pass.Login == passenger.Login);
-                    _passenger.StationId = null;
-
-                    Context.SaveChanges();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Error in update passenger.");
-                }
             }
         }
 
@@ -383,6 +357,49 @@ namespace TTGServer.Services
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        public void UpdateStationsList(UpdateStationListModel model)
+        {
+            try
+            {
+                //Get way
+                Way way = Context.Ways.First(_way => _way.Name == model.WayName);
+                //Get trueLogin
+                string trueLogin = Context.Owners.First(owner => owner.Id == way.OwnerId).Login;
+
+                if(trueLogin == model.OwnerLogin)
+                {
+                    List<Station> stations = Context.Stations.Where(station => station.WayId == way.Id).ToList();
+
+                    foreach (Station station in stations)
+                    {
+                        Context.Stations.Remove(station);
+                    }
+
+                    foreach (StationModel station in model.Stations)
+                    {
+                        Context.Stations.Add(new Station()
+                        {
+                            Name = station.Name,
+                            Description = station.Description,
+                            Latitude = station.Latitude,
+                            Longitude = station.Longitude,
+                            WayId = way.Id
+                        });
+                    }
+                    Context.SaveChanges();
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            catch (Exception)
+            {
+
+                
             }
         }
     }

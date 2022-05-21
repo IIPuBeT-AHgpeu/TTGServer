@@ -95,6 +95,46 @@ namespace TTGServer.Services
             }
         }
 
-        //пассажир
+        public void UpdatePassengerPosition(PassengerWaiting passenger)
+        {
+            if (passenger.IsSet)
+            {
+                try
+                {
+                    //Get wayId
+                    int wayId = Context.Ways.First(way => way.Name == passenger.WayName).Id;
+                    //Get stationId
+                    int stationId = Context.Stations.First(station =>
+                        (
+                            station.Latitude == passenger.StationLatitude &&
+                            station.Longitude == passenger.StationLongitude) &&
+                            station.WayId == wayId
+                        ).Id;
+
+                    Passenger _passenger = Context.Passengers.First(pass => pass.Login == passenger.Login);
+                    _passenger.StationId = stationId;
+
+                    Context.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Error in update passenger.");
+                }
+            }
+            else
+            {
+                try
+                {
+                    Passenger _passenger = Context.Passengers.First(pass => pass.Login == passenger.Login);
+                    _passenger.StationId = null;
+
+                    Context.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Error in update passenger.");
+                }
+            }
+        }
     }
 }
