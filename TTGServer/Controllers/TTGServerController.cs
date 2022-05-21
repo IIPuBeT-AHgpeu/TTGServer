@@ -14,23 +14,25 @@ namespace TTGServer.Controllers
      *** Регистрация
      * Получить инфу по маршруту (цена, среднее время, список остановок, список машин)
      *** Получить список имен всех маршрутов
-     * Отметить остановку для пассажира
+     *** Отметить остановку для пассажира
+     *** Отменить выбор остановки для пассажира
      * Очистить остановку
      *** Получить список активных авто (для обновления)
      * Изменить профиль
-     * Изменить статус авто
+     *** Изменить статус авто
      *** Изменить mapInfo для авто
-     * Начать смену
-     * Закончить смену
-     * Начать рейс
-     * Закончить рейс
+     *** Начать смену
+     *** Закончить смену
+     *** Проверить наличие начатой смены
+     *** Начать рейс
+     *** Закончить рейс
      * Изменить список остановок
      * Удалить водителя
-     * Добавить водителя
+     *** Добавить водителя
      * Изменить водителя
-     * Удалить маршрут
-     * Добавить маршрут
-     * Изменить маршрут
+     *** Удалить маршрут
+     *** Добавить маршрут
+     *** Изменить маршрут
      * Отчет (описание в телеге)
      */
         [HttpGet(@"InfoService/GetProfile/{category}&{login}")]
@@ -87,6 +89,94 @@ namespace TTGServer.Controllers
             InfoService service = new InfoService(new TTG_ver3Context());
 
             return service.GetAllWayNames();
+        }
+
+        [HttpPut(@"InfoService/UpdatePassengerPosition")]
+        public void UpdatePassengerPosition([FromBody] PassengerWaiting passengerWaiting)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            service.UpdatePassengerPosition(passengerWaiting);
+        }
+
+        [HttpPost(@"InfoService/CreateWay")]
+        public void CreateWay([FromBody] WayModel way)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            service.AddNewWay(way);
+        }
+
+        [HttpPut(@"InfoService/UpdateWay/{oldWayName}")]
+        public void UpdateWay(string oldWayName, [FromBody] WayModel way)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            service.UpdateWay(oldWayName, way);
+        }
+
+        [HttpDelete(@"InfoService/DeleteWay/{wayName}&{ownerLogin}")]
+        public void DeleteWay(string wayName, string ownerLogin)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            service.DeleteWay(wayName, ownerLogin);
+        }
+
+        [HttpPut(@"InfoService/UpdateCarStatus")]
+        public void UpdateCarStatus([FromBody] StatusModel newStatus)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            service.ChangeUnitStatus(newStatus.Login, newStatus.Status);
+        }
+
+        [HttpPost(@"InfoService/StartWorkDay")]
+        public void StartWorkDay([FromBody] StartWorkDayModel workday)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            service.SetStartWorkDay(workday);
+        }
+
+        [HttpPut(@"InfoService/FinishWorkDay")]
+        public void FinishWorkDay([FromBody] EndWorkDayModel workday)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            service.SetFinishWorkDay(workday);
+        }
+
+        [HttpGet(@"InfoService/ActiveWorkDayIsExist/{login}")]
+        public bool ActiveWorkDayIsExist(string login)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            return service.IsWorkDayExists(login);
+        }
+
+        [HttpPost(@"InfoService/StartTrip")]
+        public void StartTrip([FromBody] StartTripModel trip)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            service.SetStartTrip(trip);
+        }
+
+        [HttpPut(@"InfoService/FinishTrip")]
+        public void FinishTrip([FromBody] EndTripModel trip)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            service.SetFinishTrip(trip);
+        }
+
+        [HttpGet(@"InfoService/ActiveTripExist/{login}")]
+        public bool ActiveTripExist(string login)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            return service.IsStartTripExists(login);
         }
     }
 }
