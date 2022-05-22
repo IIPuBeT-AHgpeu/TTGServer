@@ -2,7 +2,7 @@
 
 namespace TTGServer.Models.ServiceModels
 {
-    public class PassengerRegistration : IRegistationModel
+    public class PassengerPersonalInfo : IPersonalInfoModel
     {
         public string Password { get; set; }
         public string? Name { get; set; }

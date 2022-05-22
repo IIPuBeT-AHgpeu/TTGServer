@@ -1,6 +1,6 @@
 ﻿namespace TTGServer.Models.ServiceModels
 {
-    public interface IRegistationModel : IProfileInfo
+    public interface IPersonalInfoModel : IProfileInfo
     {
         public string Password { get; set; }
     }

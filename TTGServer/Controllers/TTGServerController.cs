@@ -18,7 +18,7 @@ namespace TTGServer.Controllers
      *** Отменить выбор остановки для пассажира
      * Очистить остановку
      *** Получить список активных авто (для обновления)
-     * Изменить профиль
+     ** Изменить профиль - need fix
      * Удалить профиль
      *** Изменить статус авто
      *** Изменить mapInfo для авто
@@ -30,7 +30,7 @@ namespace TTGServer.Controllers
      *** Изменить список остановок
      * Удалить водителя
      *** Добавить водителя
-     * Изменить водителя
+     ** Изменить водителя - need fix
      *** Удалить маршрут
      *** Добавить маршрут
      *** Изменить маршрут
@@ -61,7 +61,7 @@ namespace TTGServer.Controllers
         }
 
         [HttpPost(@"Authorization/RegisterPassenger")]
-        public void RegisterPassenger([FromBody] PassengerRegistration passenger)
+        public void RegisterPassenger([FromBody] PassengerPersonalInfo passenger)
         {
             AuthorizationService service = new AuthorizationService(new TTG_ver3Context());
 
@@ -69,7 +69,7 @@ namespace TTGServer.Controllers
         }
 
         [HttpPost(@"Authorization/RegisterOwner")]
-        public void RegisterOwner([FromBody] OwnerRegistration owner)
+        public void RegisterOwner([FromBody] OwnerPersonalInfo owner)
         {
             AuthorizationService service = new AuthorizationService(new TTG_ver3Context());
 
@@ -77,7 +77,7 @@ namespace TTGServer.Controllers
         }
 
         [HttpPost(@"Authorization/RegisterUnit")]
-        public void RegisterUnit([FromBody] UnitRegistration unit)
+        public void RegisterUnit([FromBody] UnitPersonalInfo unit)
         {
             AuthorizationService service = new AuthorizationService(new TTG_ver3Context());
 
@@ -194,6 +194,30 @@ namespace TTGServer.Controllers
             InfoService service = new InfoService(new TTG_ver3Context());
 
             service.UpdateStationsList(model);
+        }
+
+        [HttpPut(@"Authorization/UpdatePassengerInfo")]
+        public void UpdatePassengerInfo([FromBody] PassengerPersonalInfoUpdate passengerPersonalInfo)
+        {
+            AuthorizationService service = new AuthorizationService(new TTG_ver3Context());
+
+            service.UpdatePassenger(passengerPersonalInfo);
+        }
+
+        [HttpPut(@"Authorization/UpdateOwnerInfo")]
+        public void UpdateOwnerInfo([FromBody] OwnerPersonalInfoUpdate ownerPersonalInfo)
+        {
+            AuthorizationService service = new AuthorizationService(new TTG_ver3Context());
+
+            service.UpdateOwner(ownerPersonalInfo);
+        }
+
+        [HttpPut(@"Authorization/UpdateUnitInfo")]
+        public void UpdateUnitInfo([FromBody] UnitPersonalInfoUpdate unitPersonalInfo)
+        {
+            AuthorizationService service = new AuthorizationService(new TTG_ver3Context());
+
+            service.UpdateUnit(unitPersonalInfo);
         }
     }
 }
