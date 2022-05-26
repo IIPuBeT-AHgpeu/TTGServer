@@ -130,15 +130,22 @@ namespace TTGServer.Services
                                 where _way.Name == wayName
                                 select new { StartTime = trip.TimeStart, EndTime = trip.TimeEnd };
 
-                float? sum = 0;
-
-                foreach (var trip in tripsTime)
+                if(tripsTime.Count() > 0)
                 {
-                    sum += (trip.EndTime?.Hour * 60 + trip.EndTime?.Minute + (float?)trip.EndTime?.Second / 60) 
-                        - ((float)trip.StartTime.Hour * 60 + trip.StartTime.Minute + (float)trip.StartTime.Second / 60);
-                }
+                    float? sum = 0;
 
-                wayInformation.AvrTripTime = sum/tripsTime.Count();//
+                    foreach (var trip in tripsTime)
+                    {
+                        sum += (trip.EndTime?.Hour * 60 + trip.EndTime?.Minute + (float?)trip.EndTime?.Second / 60)
+                            - ((float)trip.StartTime.Hour * 60 + trip.StartTime.Minute + (float)trip.StartTime.Second / 60);
+                    }
+
+                    wayInformation.AvrTripTime = sum / tripsTime.Count();//
+                }
+                else
+                {
+                    wayInformation.AvrTripTime = 0;
+                }
 
                 MapInfoService mapInfoService = new MapInfoService(Context);
 

@@ -59,6 +59,76 @@ namespace TTGServer.Services
                 Console.WriteLine("Bad passenger registration.");   
             }
         }
+
+        public IProfileInfo? GetProfileInfo(char category, string login, string password)
+        {
+            category = category.ToString().ToUpper()[0];
+
+            switch (category)
+            {
+                case 'P':
+                    {
+                        Passenger passenger;
+                        try
+                        {
+                            passenger = Context.Passengers.First(pass => pass.Login == login);
+
+                            if (passenger.Password == password)
+                            {
+                                return (PassengerProfileInfo)passenger;
+                            }
+                            else throw new Exception();
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Cant find passenger in DB.");
+                            return null;
+                        }
+                    }
+                case 'O':
+                    {
+                        Owner owner;
+                        try
+                        {
+                            owner = Context.Owners.First(own => own.Login == login);
+
+                            if (owner.Password == password)
+                            {
+                                return (OwnerProfileInfo)owner;
+                            }
+                            else throw new Exception();
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Cant find owner in DB.");
+                            return null;
+                        }
+                    }
+                case 'D':
+                    {
+                        Unit unit;
+                        try
+                        {
+                            unit = Context.Units.First(unt => unt.Login == login);
+
+                            if (unit.Password == password)
+                            {
+                                return (DriverProfileInfo)unit;
+                            }
+                            else throw new Exception();
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Cant find driver in DB.");
+                            return null;
+                        }
+                    }
+                default:
+                    {
+                        return null;
+                    }
+            }
+        }
         public void UpdatePassenger(PassengerPersonalInfoUpdate passengerPersonalInfo)
         {
             try

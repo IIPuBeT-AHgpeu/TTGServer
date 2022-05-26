@@ -62,6 +62,14 @@ namespace TTGServer.Controllers
             service.RegisterUnit(unit);
         }
 
+        [HttpGet(@"Authorization/SignIn/{category}&{login}&{password}")]
+        public IProfileInfo? SignIn(char category, string login, string password)
+        {
+            AuthorizationService service = new AuthorizationService(new TTG_ver3Context());
+
+            return service.GetProfileInfo(category, login, password);
+        }
+
         [HttpGet(@"InfoService/GetAllWayNames")]
         public string[] GetAllWayNames()
         {
