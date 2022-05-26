@@ -37,29 +37,6 @@ namespace TTGServer.Controllers
      * Отчет (описание в телеге)
      %***% Получить список маршрутов владельца
      */
-        [HttpGet(@"InfoService/GetProfile/{category}&{login}")]
-        public IProfileInfo? GetProfile(char category, string login)
-        {
-            InfoService service = new InfoService(new TTG_ver3Context());
-
-            return service.GetProfileInfo(category, login);
-        }
-
-        [HttpGet(@"MapInfoService/GetActiveCars/{wayName}")]
-        public IEnumerable<UnitMapInfo> GetActiveCars(string wayName)
-        {
-            MapInfoService service = new MapInfoService(new TTG_ver3Context());
-
-            return service.GetUnitsMapInfo(wayName);
-        }
-
-        [HttpPut(@"MapInfoService/UpdateCarMapInfo")]
-        public void UpdateCarMapInfo([FromBody] UnitMapInfo unitMapInfo)
-        {
-            MapInfoService service = new MapInfoService(new TTG_ver3Context());
-
-            service.UpdateUnitMapInfo(unitMapInfo);
-        }
 
         [HttpPost(@"Authorization/RegisterPassenger")]
         public void RegisterPassenger([FromBody] PassengerPersonalInfo passenger)
@@ -91,6 +68,38 @@ namespace TTGServer.Controllers
             InfoService service = new InfoService(new TTG_ver3Context());
 
             return service.GetAllWayNames();
+        }
+
+        [HttpGet(@"InfoService/GetWayInformation/{wayName}")]
+        public WayInformation? GetWayInformation(string wayName)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            return service.GetWayInformation(wayName);
+        }
+
+        [HttpGet(@"InfoService/GetProfile/{category}&{login}")]
+        public IProfileInfo? GetProfile(char category, string login)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            return service.GetProfileInfo(category, login);
+        }
+
+        [HttpGet(@"MapInfoService/GetActiveCars/{wayName}")]
+        public IEnumerable<UnitMapInfo> GetActiveCars(string wayName)
+        {
+            MapInfoService service = new MapInfoService(new TTG_ver3Context());
+
+            return service.GetUnitsMapInfo(wayName);
+        }
+
+        [HttpPut(@"MapInfoService/UpdateCarMapInfo")]
+        public void UpdateCarMapInfo([FromBody] UnitMapInfo unitMapInfo)
+        {
+            MapInfoService service = new MapInfoService(new TTG_ver3Context());
+
+            service.UpdateUnitMapInfo(unitMapInfo);
         }
 
         [HttpPut(@"MapInfoService/UpdatePassengerPosition")]
@@ -179,14 +188,6 @@ namespace TTGServer.Controllers
             InfoService service = new InfoService(new TTG_ver3Context());
 
             return service.IsStartTripExists(login);
-        }
-
-        [HttpGet(@"InfoService/GetWayInformation/{wayName}")]
-        public WayInformation? GetWayInformation(string wayName)
-        {
-            InfoService service = new InfoService(new TTG_ver3Context());
-
-            return service.GetWayInformation(wayName);
         }
 
         [HttpPut(@"InfoService/UpdateStationList")]
