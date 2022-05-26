@@ -423,7 +423,6 @@ namespace TTGServer.Services
                                     EndTime = trip.TimeEnd, 
                                     TripDate = trip.Date, 
                                 };
-                Console.WriteLine("End request");
                 float? sumTime;
                 int countTime;
 
@@ -449,12 +448,37 @@ namespace TTGServer.Services
                         report.AvrTimes.Add(new DynamicAvr() { AvrTime = 0, Date = d });
                     }
                 }
+                ////undone
 
                 return report;
             }
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        public string[] GetOwnersWayNames(string login)
+        {
+            try
+            {
+                //Get ownerId
+                int ownerId = Context.Owners.First(owner => owner.Login == login).Id;
+
+                List<Way> ways = Context.Ways.Where(way => way.OwnerId == ownerId).ToList();
+
+                string[] names = new string[ways.Count];
+
+                for (int i = 0; i < ways.Count; i++)
+                {
+                    names[i] = ways[i].Name;
+                }
+
+                return names;
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
     }

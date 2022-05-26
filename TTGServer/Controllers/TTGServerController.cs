@@ -35,7 +35,7 @@ namespace TTGServer.Controllers
      %***% Добавить маршрут
      %***% Изменить маршрут
      * Отчет (описание в телеге)
-     %*% Получить список маршрутов владельца
+     %***% Получить список маршрутов владельца
      */
         [HttpGet(@"InfoService/GetProfile/{category}&{login}")]
         public IProfileInfo? GetProfile(char category, string login)
@@ -229,6 +229,15 @@ namespace TTGServer.Controllers
             service.DeleteProfile(deletePersonalInfoVerification);
         }
 
+        [HttpGet(@"Info/GetOwnersWays/{login}")]
+        public string[] GetOwnersWays(string login)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            return service.GetOwnersWayNames(login);
+        }
+
+        /*
         [HttpGet(@"InfoService/GetReport/{wayName}&{ownerLogin}&{startDate}&{endDate}")]
         public ReportModel GetReport(string wayName, string ownerLogin, string startDate, string endDate)
         {
@@ -236,5 +245,6 @@ namespace TTGServer.Controllers
 
             return service.GetReport(new InputDataForReportModel() { WayName = wayName, OwnerLogin = ownerLogin, StartDate = startDate, EndDate = endDate });
         }
+        */
     }
 }
