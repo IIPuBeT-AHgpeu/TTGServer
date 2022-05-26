@@ -402,5 +402,60 @@ namespace TTGServer.Services
                 
             }
         }
+
+        public ReportModel GetReport(InputDataForReportModel data)
+        {
+            ReportModel report = new ReportModel();
+            try
+            {
+                //Get wayId by WayName
+                Way way = Context.Ways.First(way => way.Name == data.WayName);
+                //Get avrTime
+                var values = from trip in Context.Trips
+                                join workday in Context.WorkDays on trip.WorkdayId equals workday.Id
+                                join unit in Context.Units on workday.UnitId equals unit.Id
+                                join _way in Context.Ways on unit.WayId equals _way.Id
+                                where _way.Id == way.Id
+                                    && trip.Date < DateOnly.Parse(data.EndDate)
+                                    && trip.Date >= DateOnly.Parse(data.StartDate)
+                                select new { 
+                                    StartTime = trip.TimeStart, 
+                                    EndTime = trip.TimeEnd, 
+                                    TripDate = trip.Date, 
+                                };
+                Console.WriteLine("End request");
+                float? sumTime;
+                int countTime;
+
+                for(DateOnly d = DateOnly.Parse(data.StartDate); d < DateOnly.Parse(data.EndDate); d.AddMonths(1))
+                {
+                    sumTime = 0;
+                    countTime = 0;
+                    foreach (var v in values)
+                    {
+                        if(v.TripDate.Month == d.Month && v.TripDate.Year == d.Year)
+                        {
+                            sumTime += (v.EndTime?.Hour * 60 + v.EndTime?.Minute + (float?)v.EndTime?.Second / 60)
+                                - ((float)v.StartTime.Hour * 60 + v.StartTime.Minute + (float)v.StartTime.Second / 60);
+                            countTime++;
+                        }
+                    }
+                    if(countTime > 0)
+                    {
+                        report.AvrTimes.Add(new DynamicAvr() { AvrTime = (float)(sumTime / countTime), Date = d });
+                    }
+                    else
+                    {
+                        report.AvrTimes.Add(new DynamicAvr() { AvrTime = 0, Date = d });
+                    }
+                }
+
+                return report;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

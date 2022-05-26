@@ -2,6 +2,7 @@
 {
     public class OwnerPersonalInfoUpdate : OwnerPersonalInfo
     {
-        public string OldName { get; set; }
+        public string OldLogin { get; set; }
+        public string OldPassword { get; set; }
     }
 }

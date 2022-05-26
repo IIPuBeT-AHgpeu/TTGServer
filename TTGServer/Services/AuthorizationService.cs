@@ -65,12 +65,19 @@ namespace TTGServer.Services
             {
                 Passenger passenger = Context.Passengers.First(pass => pass.Login == passengerPersonalInfo.OldLogin);
 
-                passenger.Login = passengerPersonalInfo.Login;
-                passenger.Name = passengerPersonalInfo.Name;
-                passenger.Password = passengerPersonalInfo.Password;
-                passenger.StationId = null;
+                if(passenger.Password == passengerPersonalInfo.OldPassword)
+                {
+                    passenger.Login = passengerPersonalInfo.Login;
+                    passenger.Name = passengerPersonalInfo.Name;
+                    passenger.Password = passengerPersonalInfo.Password;
+                    passenger.StationId = null;
 
-                Context.SaveChanges();
+                    Context.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("Incorrect password!");
+                }
             }
             catch (Exception)
             {
@@ -81,14 +88,21 @@ namespace TTGServer.Services
         {
             try
             {
-                Owner owner = Context.Owners.First(own => own.Login == ownerPersonalInfo.Login);
+                Owner owner = Context.Owners.First(own => own.Login == ownerPersonalInfo.OldLogin);
 
-                owner.Login = ownerPersonalInfo.Login;
-                owner.License = ownerPersonalInfo.License;
-                owner.Password = ownerPersonalInfo.Password;
-                owner.Name = ownerPersonalInfo.Name;
+                if(owner.Password == ownerPersonalInfo.OldPassword)
+                {
+                    owner.Login = ownerPersonalInfo.Login;
+                    owner.License = ownerPersonalInfo.License;
+                    owner.Password = ownerPersonalInfo.Password;
+                    owner.Name = ownerPersonalInfo.Name;
 
-                Context.SaveChanges();
+                    Context.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("Incorrect password!");
+                }
             }
             catch (Exception)
             {
@@ -101,26 +115,119 @@ namespace TTGServer.Services
             {
                 Unit unit = Context.Units.First(unt => unt.Login == unitPersonalInfo.OldLogin);
 
-                unit.Login = unitPersonalInfo.Login;
-                unit.Password = unitPersonalInfo.Password;
-                unit.Passport = unitPersonalInfo.Passport;
-                unit.Name = unitPersonalInfo.Name;
-                unit.Model = unitPersonalInfo.Model;
-                unit.Latitude = null;
-                unit.Longitude = null;
-                unit.IsFull = false;
-                unit.Status = unitPersonalInfo.Status;
-                unit.Number = unitPersonalInfo.Number;
+                if(unit.Password == unitPersonalInfo.OldPassword)
+                {
+                    unit.Login = unitPersonalInfo.Login;
+                    unit.Password = unitPersonalInfo.Password;
+                    unit.Passport = unitPersonalInfo.Passport;
+                    unit.Name = unitPersonalInfo.Name;
+                    unit.Model = unitPersonalInfo.Model;
+                    unit.Latitude = null;
+                    unit.Longitude = null;
+                    unit.IsFull = false;
+                    unit.Status = unitPersonalInfo.Status;
+                    unit.Number = unitPersonalInfo.Number;
 
-                int wayId = Context.Ways.First(way => way.Name == unitPersonalInfo.WayName).Id;
+                    int wayId = Context.Ways.First(way => way.Name == unitPersonalInfo.WayName).Id;
 
-                unit.WayId = wayId;
+                    unit.WayId = wayId;
 
-                Context.SaveChanges();
+                    Context.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("Incorrect password!");
+                }
             }
             catch (Exception)
             {
                 Console.WriteLine("Error in update unit info.");
+            }
+        }
+
+        public void DeleteProfile(DeletePersonalInfoVerification delete)
+        {
+            delete.Category = delete.Category.ToString().ToUpper()[0];
+
+            switch (delete.Category)
+            {
+                case 'P':
+                    {
+                        Passenger passenger;
+                        try
+                        {
+                            passenger = Context.Passengers.First(pass => pass.Login == delete.Login) ;
+
+                            if(passenger.Password == delete.Password)
+                            {
+                                Context.Passengers.Remove(passenger);
+                                Context.SaveChanges();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Password is not true.");
+                            }
+                            break;
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Cant find passenger in DB.");
+                            break;
+                        }
+                    }
+                case 'O':
+                    {
+                        Owner owner;
+                        try
+                        {
+                            owner = Context.Owners.First(own => own.Login == delete.Login);
+
+                            if(owner.Password == delete.Password)
+                            {
+                                Context.Owners.Remove(owner);
+                                Context.SaveChanges();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Password is not true.");
+                            }
+                            break;
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Cant find owner in DB.");
+                            break;
+                        }
+                    }
+                case 'D':
+                    {
+                        Unit unit;
+                        try
+                        {
+                            unit = Context.Units.First(unt => unt.Login == delete.Login);
+
+                            if(unit.Password == delete.Password)
+                            {
+                                Context.Units.Remove(unit);
+                                Context.SaveChanges();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Password is not true.");
+                            }
+                            break;
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Cant find driver in DB.");
+                            break;
+                        }
+                    }
+                default:
+                    {
+                        Console.WriteLine("Bad category.");
+                        break;
+                    }
             }
         }
     }

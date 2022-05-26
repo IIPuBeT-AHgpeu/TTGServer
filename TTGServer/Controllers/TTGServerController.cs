@@ -9,32 +9,33 @@ namespace TTGServer.Controllers
     public class TTGServerController : ControllerBase
     {
         /*
-     * Получить профиль пользователя (авторизация)
-     *** Получить профиль пользователя
-     *** Регистрация
-     *** Получить инфу по маршруту (цена, среднее время, список остановок, список машин)
-     *** Получить список имен всех маршрутов
-     *** Отметить остановку для пассажира
-     *** Отменить выбор остановки для пассажира
-     * Очистить остановку
-     *** Получить список активных авто (для обновления)
-     ** Изменить профиль - need fix
-     * Удалить профиль
-     *** Изменить статус авто
-     *** Изменить mapInfo для авто
-     *** Начать смену
-     *** Закончить смену
-     *** Проверить наличие начатой смены
-     *** Начать рейс
-     *** Закончить рейс
-     *** Изменить список остановок
-     * Удалить водителя
-     *** Добавить водителя
-     ** Изменить водителя - need fix
-     *** Удалить маршрут
-     *** Добавить маршрут
-     *** Изменить маршрут
+     %*% Получить профиль пользователя (авторизация)
+     %***% Получить профиль пользователя
+     %***% Регистрация
+     %***% Получить инфу по маршруту (цена, среднее время, список остановок, список машин)
+     %***% Получить список имен всех маршрутов
+     %***% Отметить остановку для пассажира
+     %***% Отменить выбор остановки для пассажира
+     %*% Очистить остановку
+     %***% Получить список активных авто (для обновления)
+     %***% Изменить профиль
+     %**% Удалить профиль
+     %***% Изменить статус авто
+     %***% Изменить mapInfo для авто
+     %***% Начать смену
+     %***% Закончить смену
+     %***% Проверить наличие начатой смены
+     %***% Начать рейс
+     %***% Закончить рейс
+     %***% Изменить список остановок
+     %**% Удалить водителя
+     %***% Добавить водителя
+     %***% Изменить водителя
+     %***% Удалить маршрут
+     %***% Добавить маршрут
+     %***% Изменить маршрут
      * Отчет (описание в телеге)
+     %*% Получить список маршрутов владельца
      */
         [HttpGet(@"InfoService/GetProfile/{category}&{login}")]
         public IProfileInfo? GetProfile(char category, string login)
@@ -218,6 +219,22 @@ namespace TTGServer.Controllers
             AuthorizationService service = new AuthorizationService(new TTG_ver3Context());
 
             service.UpdateUnit(unitPersonalInfo);
+        }
+
+        [HttpPut(@"Authorization/DeleteUser")]
+        public void DeleteUser([FromBody] DeletePersonalInfoVerification deletePersonalInfoVerification)
+        {
+            AuthorizationService service = new AuthorizationService(new TTG_ver3Context());
+
+            service.DeleteProfile(deletePersonalInfoVerification);
+        }
+
+        [HttpGet(@"InfoService/GetReport/{wayName}&{ownerLogin}&{startDate}&{endDate}")]
+        public ReportModel GetReport(string wayName, string ownerLogin, string startDate, string endDate)
+        {
+            InfoService service = new InfoService(new TTG_ver3Context());
+
+            return service.GetReport(new InputDataForReportModel() { WayName = wayName, OwnerLogin = ownerLogin, StartDate = startDate, EndDate = endDate });
         }
     }
 }
